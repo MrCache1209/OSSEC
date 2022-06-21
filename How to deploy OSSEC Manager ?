@@ -1,13 +1,81 @@
-# Use CENTOS or RED HAT LINUX as they are shipped with rsyslog and ssaves us the time of extra configuration.
+# Document classification: Confidential
+# Requirements
+# UDP/1514 needs to be allowed both ways between endpoint and FIM (OSSEC Manager) host.
+# Use CENTOS or RED HAT LINUX as they are shipped with rsyslog and saves us the time of extra configuration.
+
+Good practices to start with, 
+-> Turn off firewalld
+-> Flush IP tables
+-> Overwrite the rsyslog conf with the rsyslog.conf provided in the fiel list, prior to the installation of the OSSEC manager.
+-> Check the version of ossec manager that is being installed and use the exact same for the agents.
 
 # Download the atomic release from the following link https://updates.atomicorp.com/channels/atomic/centos/7/x86_64/RPMS/atomic-release-1.0-23.el7.art.noarch.rpm
-# This is to install the atomic repo, makes the installation easy :) sudo rpm -ivh atomic-release-1.0-23.el7.art.noarch.rpm
-
+# This is to install the atomic repo, makes the installation easy :)
+# sudo rpm -ivh atomic-release-1.0-23.el7.art.noarch.rpm
 # yum update 
-
-# Next we are going to install ossec server v3.6.0-12032 currently this the most stable version, although at the time of your installation it might change. Note: Ossec   Manager and agent version should match. It should be excatly the same Number to number otherwise tehy won't communicate.
-
+# Next we are going to install ossec server v3.6.0-12032 currently this the most stable version, although at the time of your installation it might change. 
+  -> Note: Ossec   Manager and agent version should match. It should be excatly the same Number to number otherwise tehy won't communicate.
 # yum install ossec-hids-3.6.0-12032.el7.art.x86_64.rpm
-Note: I chose 12032 because when I compared versions of 3.6.0-whatever, windows agent and the manager had only this one in common. So, when upgrading make sure that according to the what ever the version of the manager is the same version is available for the agentd sfn it may not be available for windows and linux machines.
+  -> Note: I chose 12032 because when I compared versions of 3.6.0-whatever, windows agent and the manager had only this one in common. So, when upgrading make sure        that manager and agents have the same version and the same versions may not be available for windows and linux machines. Therefore, do some research before opting      to upgrade as well.
 
-Once installed, its time to configure it.
+# Once installed, its time to configure it.
+# /var/ossec/bin/ossec-configure 
+ 1- What kind of installation do you want (server, agent, local, hybrid or help)? Server
+  2- Setting up the installation environment. /var/ossec
+  3- Configuring the OSSEC HIDS.
+  3.1- Do you want e-mail notification? (y/n) [y]: NO
+  3.2- Do you want to run the integrity check daemon? (y/n) [y]: YES 
+  3.3- Do you want to run the rootkit detection engine? (y/n) [y]: NO
+  3.4- Do you want to enable active response? (y/n) [y]: YES
+  3.4.1- Do you want to enable the firewall-drop response? (y/n) [y]: NO
+  3.4.2- Do you want to add more IPs to the white list? (y/n)? [n]: NO
+  3.5- Do you want to enable remote syslog (port 514 udp)? (y/n) [y]: NO
+# Once configured, copy aand overwrite the ossec.conf to /var/ossec/etc/
+# Copy and overwrite agent.conf at /var/ossec/etc/shared/
+# chown ossec:ossec /var/ossec/etc/shared/agent.conf
+# chmod 640 /var/ossec/etc/shared/agent.conf
+# Copy and overwrite rules_config at /var/ossec/rules/
+# Restart Ossec /var/ossec/bin/ossec-control restart
+
+# Add Agent to manager /var/ossec/bin/manage_agent 
+ -> Option A
+ -> Enter the detail make sure the IP address is correct otherwise there would be 4101 error.
+ -> once added. extract eky using option E
+ -> Copy the String and use it on teh agent.
+ -> Everytime a new agent is added restart ossec manager or it wont accept the agent connection.
+ -> Do a tcpdump to check if the logs are flowing in or cat /var/ossec/logs/alerts/alerts.log
+# Repeat the steps abve to add more agents 
+ 
+# Recreate base line  --->This step is important 
+ 
+# mkdir /root/resources
+# cd /root/resources/
+# touch recreate-baseline.sh
+# chmod u+x recreate-baseline.sh
+# nano recreate-baseline.sh
+# paste the following code in,
+
+    #!/bin/bash -x
+ 
+    date "+%Y-%m-%d %H:%M:%S"
+ 
+    # cleanup syscheck database
+    /var/ossec/bin/syscheck_control -u all
+ 
+    # create new baseline
+    /var/ossec/bin/agent_control -r -a
+-------------------------------------------------------------------------------------------------------------------------
+# Add the following cron jobs 
+
+# Mondays at 06:00 AM - Recreate baseline
+00 07 * * 1 /root/resources/recreate-baseline.sh >> /root/resources/recreate-baseline.log
+
+# Every night at 11:59 PM - restart syslog
+59 23 * * * /bin/systemctl restart rsyslog.service 2>&1 >> /root/resources/rsyslog.log
+
+# Every morning at 06:00 AM - Restart OSSEC Manager
+00 06 * * * /var/ossec/bin/ossec-control restart 2>&1 >/dev/null
+--------------------------------------------------------------------------------------------------------------------------
+
+And you are all set! :)
+

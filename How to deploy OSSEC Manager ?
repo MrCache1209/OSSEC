@@ -1,0 +1,13 @@
+# Use CENTOS or RED HAT LINUX as they are shipped with rsyslog and ssaves us the time of extra configuration.
+
+# Download the atomic release from the following link https://updates.atomicorp.com/channels/atomic/centos/7/x86_64/RPMS/atomic-release-1.0-23.el7.art.noarch.rpm
+# This is to install the atomic repo, makes the installation easy :) sudo rpm -ivh atomic-release-1.0-23.el7.art.noarch.rpm
+
+# yum update 
+
+# Next we are going to install ossec server v3.6.0-12032 currently this the most stable version, although at the time of your installation it might change. Note: Ossec   Manager and agent version should match. It should be excatly the same Number to number otherwise tehy won't communicate.
+
+# yum install ossec-hids-3.6.0-12032.el7.art.x86_64.rpm
+Note: I chose 12032 because when I compared versions of 3.6.0-whatever, windows agent and the manager had only this one in common. So, when upgrading make sure that according to the what ever the version of the manager is the same version is available for the agentd sfn it may not be available for windows and linux machines.
+
+Once installed, its time to configure it.

@@ -1,65 +1,86 @@
-How to add agents
-Document classification: Confidential
-Requirements
-UDP/1514 needs to be allowed both ways between endpoint and FIM (OSSEC Manager) host.
-Agent installation on Windows Endpoint
-0. Send agent authentication key to the client.
-1.. Run ossec-agent-win32-3.7.0-24343.exe as administrator.
-2.. Run C:\Program Files (x86)\ossec-agent\os_win32ui.exe to open the agent UI.
-3.. Manage > Stop OSSEC
-4.. Set the OSSEC Server IP to be the IP of the OSSEC Manager (FIM host).
-5.. Set the Authentication key to the value indicated by Vectra (see below). Each host/agent has a unique authentication key.
-6.. Overwrite configuration file to remove unnecessary feature -> Copy  the contents from the osseca-agent.conf file. On the AgentUI go to, View >> View Config, a text file will open up. Select all and remove the current configuration and then paste in the content. Save and close.
+# Created by Dhruv Patel 21/06/2022
+
+
+
+# How to add agents
+# Document classification: Confidential
+# Requirements
+# UDP/1514 needs to be allowed both ways between endpoint and FIM (OSSEC Manager) host.
+# Agent installation on Windows Endpoint
+# Send agent authentication key to the client.
+# Run ossec-agent-win32-3.7.0-24343.exe as administrator.
+# Run C:\Program Files (x86)\ossec-agent\os_win32ui.exe to open the agent UI.
+# Manage > Stop OSSEC
+# Set the OSSEC Server IP to be the IP of the OSSEC Manager (FIM host).
+# Set the Authentication key to the value indicated by Vectra (see below). Each host/agent has a unique authentication key.
+# Overwrite configuration file to remove unnecessary feature -> Copy  the contents from the osseca-agent.conf file. On the AgentUI go to, View >> View Config, a text file will open up. Select all and remove the current configuration and then paste in the content. Save and close.
  
-7.. Copy and paste the agent.conf  here,  C:\Program Files (x86)\ossec-agent\
-8.. Manage > Start OSSEC 
- Note: the Server IP and Auth key may be required again after changing the configuration. Enter the Syslog server’s IP and the authentication key. 
-9.. If everything was properly configured, the ossec.log file will show the agent is connected to the OSSEC Manager (FIM) as shown below. To check the log file on the WinUI.exe go to View>> ViewLogs , should look something like this,
+# Copy and paste the agent.conf  here,  C:\Program Files (x86)\ossec-agent\
+# Manage > Start OSSEC 
+  Note: the Server IP and Auth key may be required again after changing the configuration. Enter the Syslog server’s IP and the authentication key. 
+# If everything was properly configured, the ossec.log file will show the agent is connected to the OSSEC Manager (FIM) as shown below. To check the log file on the WinUI.exe go to View>> ViewLogs , should look something like this,
  
-Limitations
-Newly installed agents have OSSEC's ossec.conf file, which needs to be manually overwritten for each host. The agent.conf file that is propagated from the manager doesn't overwrite local ossec.conf file. That is, local ossec.conf file has precedence over agent.conf, that's why local ossec.conf needs to be modified on each agent.
+# Limitations
+ ->  Newly installed agents have OSSEC's ossec.conf file, which needs to be manually overwritten for each host. The agent.conf file that is propagated from the manager doesn't overwrite local ossec.conf file. That is, local ossec.conf file has precedence over agent.conf, that's why local ossec.conf needs to be modified on each agent.
 
-Agent installation on Linux Endpoint
-0.. Send agent authentication key to the client.
-1.. wget -q -O - http://www.atomicorp.com/installers/atomic | sh      {This is to add the atomic repository on linux agents, which works for all, so binaries would be downloaded automatically during step 2 and the current version is 3.7.0)   OR For anything other than CentOS use  wget -q -O - http://www.atomicorp.com/installers/atomic | sudo bash  
-  sudo yum update  OR sudo apt-get update
-2.. The package manager may differ on various unix systems, (This will map all the dependencies as well)
-o	For CentOS yum install ossec-hids-agent
-o	For others apt-get install ossec-hids-agent
-3.. If steps 1 and 2 don’t work copy the binaries and install them. 
-•	Wget https://github.com/ossec/ossec-hids/archive/3.7.0.tar.gz
-•	sudo yum group install "Development Tools"
-•	yum install zlib-devel
-•	yum install yum install pcre2-devel
-•	tar -xzf 3.7.0.tar.gz
-•	cd 3.7.0
-•	./install
-4.. Run the following /var/ossec/bin/ossec-configure
-1- What kind of installation do you want (server, agent, local, hybrid or help)? Agent 
-2- Setting up the installation environment. /var/ossec
-3- Configuring the OSSEC HIDS.
-3.1- Do you want e-mail notification? (y/n) [y]: NO
-3.2- Do you want to run the integrity check daemon? (y/n) [y]: YES
-3.3- Do you want to run the rootkit detection engine? (y/n) [y]: NO
-3.4- Do you want to enable active response? (y/n) [y]: YES
-3.4.1- Do you want to enable the firewall-drop response? (y/n) [y]: NO
-3.4.2- Do you want to add more IPs to the white list? (y/n)? [n]: NO
-3.5- Do you want to enable remote syslog (port 514 udp)? (y/n) [y]: NO
-5..Run /var/ossec/bin/manage_agent 
-6.. Select the option to I to insert the key, copy paste the client key  and quit
-•	If it gives an error like this, 
+*************Agent installation on Linux Endpoint************************
+
+# Send agent authentication key to the client.
+# wget -q -O - http://www.atomicorp.com/installers/atomic | sh      {This is to add the atomic repository on linux agents, which works for all, so binaries would be downloaded automatically during step 2 and the current version is 3.7.0)   OR For anything other than CentOS use  wget -q -O - http://www.atomicorp.com/installers/atomic | sudo bash  
+  sudo yum update  OR sudo apt-get update
+# The package manager may differ on various unix systems, (This will map all the dependencies as well)
+  -> For CentOS yum install ossec-hids-agent
+  -> For others apt-get install ossec-hids-agent
+  -> If the steps above don’t work copy the binaries and install them. 
+# Wget https://github.com/ossec/ossec-hids/archive/3.6.0.tar.gz
+  -> sudo yum group install "Development Tools"
+  -> yum install zlib-devel
+  -> yum install yum install pcre2-devel
+  -> tar -xzf 3.7.0.tar.gz
+  -> cd 3.7.0
+  -> ./install
+# Run the following /var/ossec/bin/ossec-configure
+  1- What kind of installation do you want (server, agent, local, hybrid or help)? Agent 
+  2- Setting up the installation environment. /var/ossec
+  3- Configuring the OSSEC HIDS.
+  3.1- Do you want e-mail notification? (y/n) [y]: NO
+  3.2- Do you want to run the integrity check daemon? (y/n) [y]: YES 
+  3.3- Do you want to run the rootkit detection engine? (y/n) [y]: NO
+  3.4- Do you want to enable active response? (y/n) [y]: YES
+  3.4.1- Do you want to enable the firewall-drop response? (y/n) [y]: NO
+  3.4.2- Do you want to add more IPs to the white list? (y/n)? [n]: NO
+  3.5- Do you want to enable remote syslog (port 514 udp)? (y/n) [y]: NO
+  5..Run /var/ossec/bin/manage_agent 
+  6.. Select the option to I to insert the key, copy paste the client key  and quit
+  ->If it gives an error like this, 
+       ->Use touch /var/ossec/queue/rids/sender  
+       # Repeat the ossec-configure again
+
+# Overwrite the contents of the /var/ossec/etc/ossec.conf with the configuration file that has been supplied for linux agents  (ossec.conf). Make changes to the server IP, change it to the Ip of the syslog server where the manager is installed. Save changes.
+# Copy the agent.conf file to /var/ossc/etc/shared/
+# Run  /var/ossec/bin/ossec-agentd start | /var/ossec/bin/ossec-control restart
+# if everything is configure properly Check /var/ossec/logs/ossec.log for logs and this should be populated.
  
-Use touch /var/ossec/queue/rids/sender  
-Repeat step 6.
-7.. Overwrite the contents of the /var/ossec/etc/ossec.conf with the configuration file that has been supplied for linux agents  (ossec.conf). Make changes to the server IP, change it to the Ip of the syslog server where the manager is installed. Save changes.
-8.. Copy the agent.conf file to /var/ossc/etc/shared/
-9.. Run  /var/ossec/bin/ossec-agentd start | /var/ossec/bin/ossec-control restart
-10.. if everything is configure properly Check /var/ossec/logs/ossec.log for logs and this should be populated.
- 
 
-Limitations
-Newly installed agents have OSSEC's ossec.conf file, which needs to be manually overwritten for each host. The agent.conf file that is propagated from the manager doesn't overwrite local ossec.conf file. That is, local ossec.conf file has precedence over agent.conf, that's why local ossec.conf needs to be modified on each agent.
+-> Limitations
+   Newly installed agents have OSSEC's ossec.conf file, which needs to be manually overwritten for each host. The agent.conf file that is propagated from the          manager   doesn't overwrite local ossec.conf file. That is, local ossec.conf file has precedence over agent.conf, that's why local ossec.conf needs to be            modified on each agent.
+   
+****************Agent installation on Windows Endpoint************************
+# Copy the authentication string from the server  
+# Download the windwos bianary from the follwing link, https://updates.atomicorp.com/channels/atomic/windows/ossec-agent-win32-3.6.0-12032.exe
+# Note we are using v3.6.0-12032 match the ossec manager and the agent version and then install it.  
+# Launch the .exe fiel and exclude IIS log monitoring.
+# Install the package
+# Once the ossec agent starts enter the Server IP and the Auth key and save
+# Before starting the agent, go to the OSSEC Manager/Syslog server and run a tcpdump to monitor port 1514 
+# Then go to the agent and start agent
+# Check log file for possible errors, you can open teh log file from view> view logs
+# Scroll to the EOF if it says Log collector started pid:whatever and on the manager console if the tcp dump shows logs orginating from the same IP with variable length then the authentication is successful. Another way to verify the authentication is /var/ossec/bin/agent_control -l the IP should have an Active status.
 
+# NOTE : If the agent log file says 4101 error that means either it is a firewall issue or the versions differ. If the versions differ (that is the agent adn manager are running diffrent versions) then the tcpdump on the manager on port 1514 would show udp packets with length 73 originating from that particular agent IP.
 
-
+# Copy the contents from the agent-ossec.conf and paste them in the ossec.conf, view>view config, crtl+A and paste.
+# copy the agent.conf file and go to programfielsx86>ossec-agent>shared and paste.
+# Restart the OSSEC mmanager if the IP disappears add the IP in and restart again. This will update teh configuration file.
+# Check the log fiel agins to see if the log collecotr has started, if yes, All set :) 
 

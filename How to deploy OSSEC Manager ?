@@ -1,4 +1,4 @@
-# Document classification: Confidential
+# Document classification: Can be confidential for enterprise use
 # Requirements
 # UDP/1514 needs to be allowed both ways between endpoint and FIM (OSSEC Manager) host.
 # Use CENTOS or RED HAT LINUX as they are shipped with rsyslog and saves us the time of extra configuration.
